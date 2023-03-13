@@ -1,5 +1,5 @@
 // src/components/MintERC20.tsx
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import {
   Button,
   Input,
@@ -20,6 +20,7 @@ import {
 interface Props {
   addressContract: string;
   currentAccount: string | undefined;
+  onShowEvent: Dispatch<SetStateAction<string>>;
 }
 
 declare let window: any;
@@ -27,6 +28,7 @@ declare let window: any;
 export default function MintERC20(props: Props) {
   const addressContract = props.addressContract;
   const currentAccount = props.currentAccount;
+  const onShowEvent = props.onShowEvent;
   const amount = "1";
   const [toAddress, setToAddress] = useState<string>("");
 
@@ -37,13 +39,30 @@ export default function MintERC20(props: Props) {
     const signer = provider.getSigner();
     const erc20: Contract = new ethers.Contract(addressContract, abi, signer);
 
-    erc20
-      .mint(toAddress, parseEther(amount))
+    fetch("http://localhost:3001/mint/save", {
+      body: JSON.stringify({
+        wallet_address: currentAccount,
+        to: toAddress,
+        amount,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "PUT",
+    })
+      .catch((err) => {
+        console.log(`We dont want to stop here, but got an error: ${err}`);
+      })
+      .then(() => {
+        return erc20.mint(toAddress, parseEther(amount));
+      })
       .then((tr: TransactionResponse) => {
         console.log(`TransactionResponse TX hash: ${tr.hash}`);
-        tr.wait().then((receipt: TransactionReceipt) => {
-          console.log("mint receipt", receipt);
-        });
+
+        return tr.wait();
+      })
+      .then((receipt: TransactionReceipt) => {
+        onShowEvent(receipt.to);
       })
       .catch((e: Error) => console.log(e));
   }

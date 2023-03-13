@@ -13,12 +13,10 @@ const addressERC20 = "0x927dfb9e957526e4d40448d6d05a39ea39a2ee6b";
 
 const Home: NextPage = () => {
   const [balance, setBalance] = useState<string | undefined>();
+  const [mintTo, setMintTo] = useState("");
   const [currentAccount, setCurrentAccount] = useState<string | undefined>();
-  const [chainId, setChainId] = useState<number | undefined>();
-  const [chainname, setChainName] = useState<string | undefined>();
 
   useEffect(() => {
-    //get ETH balance and network info only when having currentAccount
     if (!currentAccount || !ethers.utils.isAddress(currentAccount)) return;
 
     //client side code
@@ -26,22 +24,6 @@ const Home: NextPage = () => {
       console.log("please install MetaMask");
       return;
     }
-
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    provider
-      .getBalance(currentAccount)
-      .then((result) => {
-        setBalance(ethers.utils.formatEther(result));
-      })
-      .catch((e) => console.log(e));
-
-    provider
-      .getNetwork()
-      .then((result) => {
-        setChainId(result.chainId);
-        setChainName(result.name);
-      })
-      .catch((e) => console.log(e));
   }, [currentAccount]);
 
   //click connect
@@ -58,8 +40,7 @@ const Home: NextPage = () => {
       .send("eth_requestAccounts", [])
       .then((accounts) => {
         if (accounts.length > 0) setCurrentAccount(accounts[0]);
-        console.log("UPDATE DB" + currentAccount);
-        return fetch("http://localhost:3001/connected-wallet", {
+        return fetch("http://localhost:3001/wallet/connected/save", {
           body: JSON.stringify({
             wallet_address: accounts[0],
           }),
@@ -82,10 +63,17 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>My DAPP</title>
+        <title>Add3</title>
       </Head>
 
       <VStack>
+        {mintTo ? (
+          <Box bg="green" w="100%" p={4} color="white">
+            Tokens minted to address {mintTo}
+          </Box>
+        ) : (
+          ""
+        )}
         <Box w="100%" my={4}>
           {currentAccount ? (
             <Button type="button" w="100%" onClick={onClickDisconnect}>
@@ -109,6 +97,7 @@ const Home: NextPage = () => {
           <MintERC20
             addressContract={addressERC20}
             currentAccount={currentAccount}
+            onShowEvent={setMintTo}
           />
         </Box>
       </VStack>

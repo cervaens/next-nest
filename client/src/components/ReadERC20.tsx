@@ -1,5 +1,5 @@
 // src/components/ReadERC20.tsx
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Text } from "@chakra-ui/react";
 import { ERC20ABI as abi } from "abi/ERC20ABI";
 import { ethers } from "ethers";
@@ -47,11 +47,58 @@ export default function ReadERC20(props: Props) {
     //called only once
   });
 
+  const queryTokenBalance = useCallback(
+    (window: any) => {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const erc20: Contract = new ethers.Contract(
+        addressContract,
+        abi,
+        provider
+      );
+      return fetch(
+        `http://localhost:3001/wallet/balance?wallet_address=${currentAccount}&token_symbol=${symbol}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "GET",
+        }
+      )
+        .then((res) => res.json())
+        .catch((err) => {
+          console.log(
+            `We dont want to stop here if we cant read the API ${err}`
+          );
+        })
+        .then((res) => {
+          return erc20.balanceOf(currentAccount).then((result: string) => {
+            const newValue = Number(ethers.utils.formatEther(result));
+            SetBalance(newValue);
+            if (!res || res.amount !== result.toString()) {
+              console.log("Updating balance");
+              return fetch("http://localhost:3001/wallet/balance/update", {
+                body: JSON.stringify({
+                  wallet_address: currentAccount,
+                  token_symbol: symbol,
+                  amount: result.toString(),
+                }),
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                method: "POST",
+              });
+            }
+          });
+        })
+        .catch((e: Error) => console.log(e));
+    },
+    [currentAccount, addressContract, symbol]
+  );
+
   //call when currentAccount change
   useEffect(() => {
     if (!window.ethereum) return;
     if (!currentAccount) return;
-
     queryTokenBalance(window);
 
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -70,19 +117,7 @@ export default function ReadERC20(props: Props) {
     return () => {
       erc20.removeAllListeners(toMe);
     };
-  });
-
-  async function queryTokenBalance(window: any) {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const erc20: Contract = new ethers.Contract(addressContract, abi, provider);
-
-    erc20
-      .balanceOf(currentAccount)
-      .then((result: string) => {
-        SetBalance(Number(ethers.utils.formatEther(result)));
-      })
-      .catch((e: Error) => console.log(e));
-  }
+  }, [currentAccount, queryTokenBalance, addressContract]);
 
   return (
     <div>
