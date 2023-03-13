@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import ReadERC20 from "components/ReadERC20";
 import MintERC20 from "components/MintERC20";
+import UserHistory from "components/UserHistory";
 
 declare let window: any;
 const addressERC20 = "0x927dfb9e957526e4d40448d6d05a39ea39a2ee6b";
@@ -112,6 +113,12 @@ const Home: NextPage = () => {
             addressContract={addressERC20}
             currentAccount={currentAccount}
             onShowEvent={setMintTo}
+          />
+        </Box>
+        <Box mb={0} p={4} w="100%" borderWidth="1px" borderRadius="lg">
+          <UserHistory
+            addressContract={addressERC20}
+            currentAccount={currentAccount}
           />
         </Box>
       </VStack>

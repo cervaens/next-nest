@@ -95,28 +95,10 @@ export default function ReadERC20(props: Props) {
     [currentAccount, addressContract, symbol]
   );
 
-  //call when currentAccount change
   useEffect(() => {
     if (!window.ethereum) return;
     if (!currentAccount) return;
     queryTokenBalance(window);
-
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const erc20: Contract = new ethers.Contract(addressContract, abi, provider);
-
-    // listen for changes on an Ethereum address
-    console.log(`listening for Mint...`);
-
-    const toMe = erc20.filters.Transfer(null, currentAccount);
-    erc20.on(toMe, (from, to, amount, event) => {
-      console.log("Mint|received", { from, to, amount, event });
-      queryTokenBalance(window);
-    });
-
-    // remove listener when the component is unmounted
-    return () => {
-      erc20.removeAllListeners(toMe);
-    };
   }, [currentAccount, queryTokenBalance, addressContract]);
 
   return (

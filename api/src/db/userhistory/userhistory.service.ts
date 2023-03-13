@@ -20,6 +20,9 @@ export class UserhistoryService {
   }
 
   async get(getUserHistoryDto: GetUserHistoryDto): Promise<any> {
-    return this.userhistoryModel.find(getUserHistoryDto).lean();
+    return this.userhistoryModel
+      .find(getUserHistoryDto)
+      .sort({ timestamp: -1 })
+      .lean();
   }
 }

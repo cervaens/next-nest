@@ -1,5 +1,5 @@
 // src/components/MintERC20.tsx
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   Button,
   Input,
@@ -62,10 +62,28 @@ export default function MintERC20(props: Props) {
         return tr.wait();
       })
       .then((receipt: TransactionReceipt) => {
-        onShowEvent(receipt.to);
+        // onShowEvent(receipt.to);
       })
       .catch((e: Error) => console.log(e));
   }
+
+  useEffect(() => {
+    if (!window.ethereum) return;
+    if (!currentAccount) return;
+    if (!toAddress) return;
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const erc20: Contract = new ethers.Contract(addressContract, abi, provider);
+    const eventToAddress = erc20.filters.Transfer(null, toAddress);
+    erc20.on(eventToAddress, (from, to, amount, event) => {
+      console.log("Mint|received", { from, to, amount, event });
+      onShowEvent(toAddress);
+    });
+
+    // remove listener when the component is unmounted
+    return () => {
+      erc20.removeAllListeners(eventToAddress);
+    };
+  }, [addressContract, toAddress, currentAccount, onShowEvent]);
 
   return (
     <form onSubmit={mint}>

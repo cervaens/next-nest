@@ -14,7 +14,7 @@ export class MintService {
       timestamp: new Date().getTime(),
       event: "Mint",
       extraInfo: {
-        to: userMintDto.to,
+        to: userMintDto.to.toString(),
         amount: userMintDto.amount,
       },
     };

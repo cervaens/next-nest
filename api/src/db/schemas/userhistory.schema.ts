@@ -28,3 +28,4 @@ UserhistorySchema.index(
   { wallet_address: 1, timestamp: 1, event: 1 },
   { unique: true }
 );
+UserhistorySchema.index({ timestamp: 1 });
