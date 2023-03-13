@@ -1,0 +1,25 @@
+version: "3"
+services:
+  add3-ui:
+    container_name: add3-ui
+    image: add3-ui
+    restart: always
+    build: ./client
+    ports:
+      - "3000:3000"
+    links:
+      - add3-api
+  mongo:
+    container_name: mongo_host
+    image: mongo
+    ports:
+      - "27018:27017"
+  add3-api:
+    container_name: add3-api
+    image: add3-api
+    restart: always
+    build: ./api
+    ports:
+      - "3001:3001"
+    links:
+      - mongo
