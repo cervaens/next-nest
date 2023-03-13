@@ -27,7 +27,7 @@ const Home: NextPage = () => {
   }, [currentAccount]);
 
   //click connect
-  const onClickConnect = () => {
+  const onClickConnect = async () => {
     //client side code
     if (!window.ethereum) {
       console.log("please install MetaMask");
@@ -36,6 +36,20 @@ const Home: NextPage = () => {
 
     //we can do it using ethers.js
     const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+    const chainId = 5; // Goerli Test network
+
+    if (window.ethereum.networkVersion !== chainId) {
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: ethers.utils.hexValue(chainId) }],
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
     provider
       .send("eth_requestAccounts", [])
       .then((accounts) => {
