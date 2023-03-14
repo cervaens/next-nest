@@ -105,6 +105,7 @@ const Home: NextPage = () => {
           <ReadERC20
             addressContract={addressERC20}
             currentAccount={currentAccount}
+            mintTo={mintTo}
           />
         </Box>
 
@@ -119,6 +120,7 @@ const Home: NextPage = () => {
           <UserHistory
             addressContract={addressERC20}
             currentAccount={currentAccount}
+            mintTo={mintTo}
           />
         </Box>
       </VStack>

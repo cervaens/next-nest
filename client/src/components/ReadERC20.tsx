@@ -8,6 +8,7 @@ import { Contract } from "ethers";
 interface Props {
   addressContract: string;
   currentAccount: string | undefined;
+  mintTo: string | undefined;
 }
 
 declare let window: any;
@@ -15,6 +16,7 @@ declare let window: any;
 export default function ReadERC20(props: Props) {
   const addressContract = props.addressContract;
   const currentAccount = props.currentAccount;
+  const mintTo = props.mintTo;
   const [symbol, setSymbol] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [balance, SetBalance] = useState<number | undefined>(undefined);
@@ -92,14 +94,15 @@ export default function ReadERC20(props: Props) {
         })
         .catch((e: Error) => console.log(e));
     },
-    [currentAccount, addressContract, symbol]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [currentAccount, addressContract, symbol, mintTo]
   );
 
   useEffect(() => {
     if (!window.ethereum) return;
     if (!currentAccount) return;
     queryTokenBalance(window);
-  }, [currentAccount, queryTokenBalance, addressContract]);
+  });
 
   return (
     <div>

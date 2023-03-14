@@ -10,6 +10,7 @@ import React, {
 interface Props {
   addressContract: string;
   currentAccount: string | undefined;
+  mintTo: string | undefined;
   // onUserHistory: Dispatch<SetStateAction<UserHistory[] | undefined>>;
 }
 
@@ -18,6 +19,7 @@ declare let window: any;
 export default function UserHistory(props: Props) {
   const addressContract = props.addressContract;
   const currentAccount = props.currentAccount;
+  const mintTo = props.mintTo;
   const [userHistory, setUserHistory] = useState<
     Array<UserHistory> | undefined
   >();
@@ -44,6 +46,7 @@ export default function UserHistory(props: Props) {
           console.log(`Error: ${err}`);
         });
     },
+
     [currentAccount]
   );
 
@@ -51,7 +54,7 @@ export default function UserHistory(props: Props) {
     if (!window.ethereum) return;
     if (!currentAccount) return;
     getUserHistory(window);
-  }, [currentAccount, getUserHistory]);
+  }, [currentAccount, getUserHistory, mintTo]);
 
   return (
     <div>
