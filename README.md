@@ -13,7 +13,7 @@ docker compose up
 ## Interact with the application
 
 ```bash
-curl http://localhost:3000/
+Go to http://localhost:3000/
 ```
 
 ## Explanation
