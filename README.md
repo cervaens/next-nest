@@ -39,14 +39,13 @@ As agreed with Valentino, my focus would be in the Backend as my React experienc
 
 ## Weaknesses
 
+- FE is basic, probably not the best code architecture. Also the focus was on showing the required data in the webpage, not any type of styling.
+- Nextjs deployment is also basic, just copying all files and build + start
+
 ## Improvements
 
 Here are some improvements, mostly due to time management:
 
-- Add more indexes to schemas
 - implemented tests
 - Comment functions
 - Better logs
-- Request response could be more customized
-
-## Assumptions
