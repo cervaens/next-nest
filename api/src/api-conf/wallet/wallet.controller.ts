@@ -8,22 +8,26 @@ import {
   Put,
   Query,
 } from "@nestjs/common";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CreateUserbalanceDto } from "src/dto/create-userbalance.dto";
-import { CreateUserhistoryDto } from "src/dto/create-userhistory.dto";
 import { GetUserbalanceDto } from "src/dto/get-userbalance.dto";
-import { GetUserHistoryDto } from "src/dto/get-userhistory.dto";
+import { WalletAddressDto } from "src/dto/wallet-address.dto";
 import { WalletService } from "./wallet.service";
 
+@ApiTags("Wallet")
 @Controller("wallet")
 export class WalletController {
   constructor(private readonly walletService: WalletService) {}
 
+  @ApiOperation({
+    description: "Adds a new record when a wallet connects",
+  })
   @Put("/connected/save")
   async addNewConnection(
-    @Body() createUserHistory: CreateUserhistoryDto
+    @Body() walletAddressDto: WalletAddressDto
   ): Promise<string> {
     try {
-      await this.walletService.addNewRecord(createUserHistory);
+      await this.walletService.addNewRecord(walletAddressDto);
       return `Connected wallet record inserted.`;
     } catch (err) {
       throw new HttpException(
@@ -33,12 +37,15 @@ export class WalletController {
     }
   }
 
+  @ApiOperation({
+    description: "Gets the behavioral history of a user",
+  })
   @Get("/history/")
   async getWalletHistory(
-    @Query() getUserHistoryDto: GetUserHistoryDto
+    @Query() walletAddressDto: WalletAddressDto
   ): Promise<string> {
     try {
-      const history = await this.walletService.getHistory(getUserHistoryDto);
+      const history = await this.walletService.getHistory(walletAddressDto);
       return history;
     } catch (err) {
       throw new HttpException(
@@ -48,13 +55,15 @@ export class WalletController {
     }
   }
 
+  @ApiOperation({
+    description: "Gets a user balance for a certain token",
+  })
   @Get("/balance/")
   async getBalance(
     @Query() getUserbalanceDto: GetUserbalanceDto
-  ): Promise<string> {
+  ): Promise<CreateUserbalanceDto> {
     try {
-      const balance = await this.walletService.getBalance(getUserbalanceDto);
-      return balance ? balance : 0;
+      return await this.walletService.getBalance(getUserbalanceDto);
     } catch (err) {
       throw new HttpException(
         `Error when getting balance: ${err}`,
@@ -63,6 +72,9 @@ export class WalletController {
     }
   }
 
+  @ApiOperation({
+    description: "Updates a user token balance",
+  })
   @Post("/balance/update")
   async updateBalance(
     @Body() createUserbalance: CreateUserbalanceDto

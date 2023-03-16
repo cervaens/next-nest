@@ -1,5 +1,4 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { DbModule } from "src/db/db.module";
 import { UserbalanceService } from "src/db/userbalance/userbalance.service";
 import { rootMongooseTestModule } from "src/test-utils/MongooseTestModule";
 import { WalletService } from "./wallet.service";

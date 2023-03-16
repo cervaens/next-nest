@@ -26,7 +26,9 @@ export class UserbalanceService {
     );
   }
 
-  async get(getUserbalanceDto: GetUserbalanceDto): Promise<any> {
+  async get(
+    getUserbalanceDto: GetUserbalanceDto
+  ): Promise<CreateUserbalanceDto> {
     return this.userbalanceModel.findOne(getUserbalanceDto).lean();
   }
 }

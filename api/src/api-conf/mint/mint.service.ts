@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { UserhistoryService } from "src/db/userhistory/userhistory.service";
-import { CreateUserhistoryDto } from "src/dto/create-userhistory.dto";
 import { UserMintDto } from "src/dto/user-mint.dto";
 
 @Injectable()

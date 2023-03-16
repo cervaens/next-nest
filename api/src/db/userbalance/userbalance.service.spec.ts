@@ -6,18 +6,12 @@ import {
 } from "../../test-utils/MongooseTestModule";
 import { MongooseModule } from "@nestjs/mongoose";
 import { Userbalance, UserbalanceSchema } from "../schemas/userbalance.schema";
-
-const userBalanceObj = {
-  wallet_address: "0x123",
-  last_update: new Date().getTime(),
-  token_symbol: "TestSymbol",
-  amount: "123",
-};
+import { userBalanceObj } from "../../test-utils/userbalance";
 
 describe("UserbalanceService", () => {
   let service: UserbalanceService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         rootMongooseTestModule(),
@@ -38,6 +32,14 @@ describe("UserbalanceService", () => {
   it("User balance should be updated ", async () => {
     const update = await service.update(userBalanceObj);
     expect(update.upsertedCount).toBe(1);
+  });
+
+  it("User balance should be retrieved", async () => {
+    const userBalanceRes = await service.get({
+      wallet_address: userBalanceObj.wallet_address,
+      token_symbol: userBalanceObj.token_symbol,
+    });
+    expect(userBalanceRes.amount).toBe(userBalanceObj.amount);
   });
 
   afterAll(async () => {

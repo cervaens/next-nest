@@ -1,10 +1,5 @@
 import { MongooseModule } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
-import { Minttx, MinttxSchema } from "src/db/schemas/minttx.schema";
-import {
-  Userbalance,
-  UserbalanceSchema,
-} from "src/db/schemas/userbalance.schema";
 import {
   Userhistory,
   UserhistorySchema,
