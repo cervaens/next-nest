@@ -10,10 +10,16 @@ docker compose up
 
 ```
 
-## Interact with the application
+## Interact with the application frontend
 
 ```bash
 Go to http://localhost:3000/
+```
+
+## Interact with the application backend through Swagger UI
+
+```bash
+Go to http://localhost:3001/api
 ```
 
 ## Explanation
