@@ -1,18 +1,23 @@
-import { MongooseModule } from "@nestjs/mongoose";
+import { getConnectionToken, MongooseModule } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
+import { Connection } from "mongoose";
 import {
   Userhistory,
   UserhistorySchema,
 } from "src/db/schemas/userhistory.schema";
 import { UserhistoryService } from "src/db/userhistory/userhistory.service";
-import { rootMongooseTestModule } from "src/test-utils/MongooseTestModule";
+import {
+  closeInMongodConnection,
+  rootMongooseTestModule,
+} from "src/test-utils/MongooseTestModule";
 import { MintController } from "./mint.controller";
 import { MintService } from "./mint.service";
 
 describe("MintController", () => {
   let controller: MintController;
+  let connection: Connection;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         rootMongooseTestModule(),
@@ -25,9 +30,15 @@ describe("MintController", () => {
     }).compile();
 
     controller = module.get<MintController>(MintController);
+    connection = await module.get(getConnectionToken());
   });
 
   it("should be defined", () => {
     expect(controller).toBeDefined();
+  });
+
+  afterAll(async () => {
+    await connection.close();
+    await closeInMongodConnection();
   });
 });

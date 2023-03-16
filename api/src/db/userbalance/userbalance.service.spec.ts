@@ -4,12 +4,14 @@ import {
   closeInMongodConnection,
   rootMongooseTestModule,
 } from "../../test-utils/MongooseTestModule";
-import { MongooseModule } from "@nestjs/mongoose";
+import { getConnectionToken, MongooseModule } from "@nestjs/mongoose";
 import { Userbalance, UserbalanceSchema } from "../schemas/userbalance.schema";
 import { userBalanceObj } from "../../test-utils/userbalance";
+import { Connection } from "mongoose";
 
 describe("UserbalanceService", () => {
   let service: UserbalanceService;
+  let connection: Connection;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,6 +25,7 @@ describe("UserbalanceService", () => {
     }).compile();
 
     service = module.get<UserbalanceService>(UserbalanceService);
+    connection = await module.get(getConnectionToken());
   });
 
   it("should be defined", () => {
@@ -43,6 +46,7 @@ describe("UserbalanceService", () => {
   });
 
   afterAll(async () => {
+    await connection.close();
     await closeInMongodConnection();
   });
 });

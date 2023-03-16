@@ -1,4 +1,4 @@
-import { MongooseModule } from "@nestjs/mongoose";
+import { getConnectionToken, MongooseModule } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
 import {
   Userbalance,
@@ -17,9 +17,11 @@ import {
 import { WalletController } from "./wallet.controller";
 import { WalletService } from "./wallet.service";
 import { userBalanceObj } from "../../test-utils/userbalance";
+import { Connection } from "mongoose";
 
 describe("WalletController", () => {
   let controller: WalletController;
+  let connection: Connection;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -35,6 +37,7 @@ describe("WalletController", () => {
     }).compile();
 
     controller = module.get<WalletController>(WalletController);
+    connection = await module.get(getConnectionToken());
   });
 
   it("should be defined", () => {
@@ -55,6 +58,7 @@ describe("WalletController", () => {
   });
 
   afterAll(async () => {
+    await connection.close();
     await closeInMongodConnection();
   });
 });

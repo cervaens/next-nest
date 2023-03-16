@@ -1,8 +1,11 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { UserbalanceService } from "src/db/userbalance/userbalance.service";
-import { rootMongooseTestModule } from "src/test-utils/MongooseTestModule";
+import {
+  closeInMongodConnection,
+  rootMongooseTestModule,
+} from "src/test-utils/MongooseTestModule";
 import { WalletService } from "./wallet.service";
-import { MongooseModule } from "@nestjs/mongoose";
+import { getConnectionToken, MongooseModule } from "@nestjs/mongoose";
 import {
   Userbalance,
   UserbalanceSchema,
@@ -13,11 +16,13 @@ import {
   Userhistory,
   UserhistorySchema,
 } from "src/db/schemas/userhistory.schema";
+import { Connection } from "mongoose";
 
 describe("WalletService", () => {
   let service: WalletService;
+  let connection: Connection;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         rootMongooseTestModule(),
@@ -31,9 +36,15 @@ describe("WalletService", () => {
     }).compile();
 
     service = module.get<WalletService>(WalletService);
+    connection = await module.get(getConnectionToken());
   });
 
   it("should be defined", () => {
     expect(service).toBeDefined();
+  });
+
+  afterAll(async () => {
+    await connection.close();
+    await closeInMongodConnection();
   });
 });

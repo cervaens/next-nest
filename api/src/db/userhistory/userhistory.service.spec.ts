@@ -1,12 +1,17 @@
-import { MongooseModule } from "@nestjs/mongoose";
+import { getConnectionToken, MongooseModule } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
-import { rootMongooseTestModule } from "../../test-utils/MongooseTestModule";
+import {
+  closeInMongodConnection,
+  rootMongooseTestModule,
+} from "../../test-utils/MongooseTestModule";
 import { Userhistory, UserhistorySchema } from "../schemas/userhistory.schema";
 import { UserhistoryService } from "./userhistory.service";
 import { userHistoryObj } from "../../test-utils/userhistory";
+import { Connection } from "mongoose";
 
 describe("UserhistoryService", () => {
   let service: UserhistoryService;
+  let connection: Connection;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -20,6 +25,7 @@ describe("UserhistoryService", () => {
     }).compile();
 
     service = module.get<UserhistoryService>(UserhistoryService);
+    connection = await module.get(getConnectionToken());
   });
 
   it("should be defined", () => {
@@ -38,5 +44,10 @@ describe("UserhistoryService", () => {
     expect(userBalanceRes[0].extraInfo.amount).toBe(
       userHistoryObj.extraInfo.amount
     );
+  });
+
+  afterAll(async () => {
+    await connection.close();
+    await closeInMongodConnection();
   });
 });
